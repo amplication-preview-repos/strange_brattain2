@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Student {
+  attendances        Attendance[]
+  createdAt          DateTime     @default(now())
+  email              String?
+  gatePasses         GatePass[]
+  id                 String       @id @default(cuid())
+  name               String?
+  registrationNumber String?
+  updatedAt          DateTime     @updatedAt
+}
+
+model GatePass {
+  authority   Authority? @relation(fields: [authorityId], references: [id])
+  authorityId String?
+  createdAt   DateTime   @default(now())
+  id          String     @id @default(cuid())
+  reason      String?
+  requestDate DateTime?
+  status      String?
+  student     Student?   @relation(fields: [studentId], references: [id])
+  studentId   String?
+  updatedAt   DateTime   @updatedAt
+}
+
+model Attendance {
+  createdAt DateTime  @default(now())
+  entryTime DateTime?
+  exitTime  DateTime?
+  id        String    @id @default(cuid())
+  status    String?
+  student   Student?  @relation(fields: [studentId], references: [id])
+  studentId String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Authority {
+  createdAt  DateTime   @default(now())
+  email      String?
+  gatePasses GatePass[]
+  id         String     @id @default(cuid())
+  name       String?
+  role       String?
+  updatedAt  DateTime   @updatedAt
+}
